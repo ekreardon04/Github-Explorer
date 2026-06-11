@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 
 import { fetchGithubUser } from "../api/github";
 import UserCard from "./UserCard";
+import RecentSearches from "./RecentSearches";
 
 const UserSearch = () => {
 
 const [username, setUsername] = useState("")
 const [submittedUserName, setSubmittedUserName] = useState("")
+const [recentUsers, setRecentUsers] = useState<string[]>([])
 
 
 const {data, isLoading, isError, error} = useQuery({
@@ -18,7 +20,14 @@ const {data, isLoading, isError, error} = useQuery({
 
 const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmittedUserName(username.trim())
+    const trimmed = username.trim()
+    if(!trimmed) return
+    setSubmittedUserName(trimmed)
+
+    setRecentUsers((prev) => {
+      const updated = [trimmed, ...prev.filter((user) => user !== trimmed)]
+      return updated.slice(0, 5)
+    })
 }
 
     return ( <>
@@ -36,6 +45,15 @@ const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
       {data && (
         <UserCard user={data}/>
       )}
+         {recentUsers.length > 0 && (
+        <RecentSearches 
+        users = {recentUsers} 
+        onSelect={(username) =>  {
+          setUsername(username) 
+          setSubmittedUserName(username)
+
+        }} />
+        )}
     </> );
 }
  
