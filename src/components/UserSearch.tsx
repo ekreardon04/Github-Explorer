@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState, useEffect} from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchGithubUser } from "../api/github";
@@ -9,7 +9,10 @@ const UserSearch = () => {
 
 const [username, setUsername] = useState("")
 const [submittedUserName, setSubmittedUserName] = useState("")
-const [recentUsers, setRecentUsers] = useState<string[]>([])
+const [recentUsers, setRecentUsers] = useState<string[]>(() => {
+  const stored = localStorage.getItem("recentUsers")
+  return stored ? JSON.parse(stored) : []
+})
 
 
 const {data, isLoading, isError, error} = useQuery({
@@ -29,6 +32,10 @@ const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
       return updated.slice(0, 5)
     })
 }
+
+useEffect(() => {
+  localStorage.setItem('recentUsers', JSON.stringify(recentUsers))
+}, [recentUsers])
 
     return ( <>
     <form onSubmit={handleSubmit} className="form">
