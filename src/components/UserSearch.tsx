@@ -26,6 +26,7 @@ const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     const trimmed = username.trim()
     if(!trimmed) return
     setSubmittedUserName(trimmed)
+    setUsername("")
 
     setRecentUsers((prev) => {
       const updated = [trimmed, ...prev.filter((user) => user !== trimmed)]
